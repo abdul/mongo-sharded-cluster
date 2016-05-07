@@ -1,0 +1,35 @@
+version: "2"
+
+services:
+  mongodb-master:
+    image: mongo-cluster-base
+    environment:
+      ROLE: master
+      SLAVE1: slave1
+      SLAVE2: slave2
+    hostname: mongodb
+    ports:
+      - "27017:27017"
+    container_name: mongodb
+    networks:
+      - mongo-net
+
+  mongodb-slave1:
+    image: mongo-cluster-base
+    hostname: slave1
+    ports:
+      - "27018:27017"
+    container_name: slave1
+    networks:
+      - mongo-net
+  mongodb-slave2:
+    image: mongo-cluster-base
+    hostname: slave2
+    container_name: slave2
+    ports:
+      - "27019:27017"
+    networks:
+      - mongo-net
+
+networks:
+  mongo-net:
