@@ -11,7 +11,7 @@ Inspiration and most of code/configuration comes from [this blog post] (http://w
 ### Running
 
 * Optional: Build base image: `docker-compose build`
-* Run `docker-compose up`
+* Run `docker-compose up -d`
 * Wait for about 1-2 minutes, let nodes come up, and replicas configuration takes place
 * Connect to Primary (or master) - `mongo <DOCKER_MACHINE_IP:27017>` or `docker run -it abdul/alpine-mongo:latest mongo <DOCKER_MACHINE_IP:27017>`
 * [Import] (https://docs.mongodb.com/getting-started/shell/import-data/) or [Insert] (https://docs.mongodb.com/getting-started/shell/insert/) data
