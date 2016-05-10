@@ -1,38 +1,149 @@
 version: "2"
 
 services:
-  mongodb-master:
-    build: .
-    image: mongo-cluster-base
+  mongodb_config0:
+    extends: 
+      file: config/docker-compose.yml
+      service: mongodb_config_base
     environment:
-      ROLE: master
-      SLAVE1: slave1
-      SLAVE2: slave2
-    hostname: mongodb
+      ROLE: PRIMARY
+      REPLICA_NODE_COUNT: 3
+      REPLICA_NODE_PREFIX: "mongodb_config"
+    hostname: mongodb_config0
     ports:
-      - "27017:27017"
-    container_name: mongodb
+      - "27029:27019"
+    container_name: mongodb_config0
     networks:
       - mongo-net
 
-  mongodb-slave1:
-    build: .
-    image: mongo-cluster-base
-    hostname: slave1
+  mongodb_config1:
+    extends: 
+      file: config/docker-compose.yml
+      service: mongodb_config_base
+    hostname: mongodb_config1
     ports:
-      - "27018:27017"
-    container_name: slave1
+      - "27030:27019"
+    container_name: mongodb_config1
     networks:
       - mongo-net
-  mongodb-slave2:
-    build: .
-    image: mongo-cluster-base
-    hostname: slave2
-    container_name: slave2
+  mongodb_config2:
+    extends: 
+      file: config/docker-compose.yml
+      service: mongodb_config_base
+    hostname: mongodb_config2
+    container_name: mongodb_config2
     ports:
-      - "27019:27017"
+      - "27031:27019"
     networks:
       - mongo-net
+
+  mongos:
+    build: 
+      context: .
+      args:
+        - mongod_config=mongos/mongod.conf
+        - startup_script=mongos/startup.sh    
+    image: mongos-base
+    environment:
+      DATA_REPLICA_COUNT: 2
+      NODES_PER_REPLICAS: 3
+      CONFIG_PREFIX: "mongodb_config"
+      CONFIG_REPLICA_PRIMARY: mongodb_config0
+      REPLICA_SUFFIX: mongodb-replica
+      REPLSET_PREFIX: "rs"
+    hostname: mongos
+    ports:
+      - "27017:27017"
+    container_name: mongos
+    networks:
+      - mongo-net
+    depends_on:
+      - mongodb_config0
+      - mongodb_config1
+      - mongodb_config2
+      - mongodb-replica1_0
+      - mongodb-replica2_0
+
+  mongodb-replica1_0:
+    extends: 
+      file: replica/docker-compose.yml
+      service: mongodb_replica_base
+    environment:
+      REPLSET: rs1
+      ROLE: PRIMARY
+      REPLICA_NODE_COUNT: 3
+      REPLICA_NODE_PREFIX: "mongodb-replica1_"
+    hostname: mongodb-replica1_0
+    ports:
+      - "27037:27017"
+    container_name: mongodb-replica1_0
+    networks:
+      - mongo-net
+
+  mongodb-replica1_1:
+    extends: 
+      file: replica/docker-compose.yml
+      service: mongodb_replica_base
+    environment:
+      REPLSET: rs1
+    hostname: mongodb-replica1_1
+    ports:
+      - "27038:27017"
+    container_name: mongodb-replica1_1
+    networks:
+      - mongo-net
+  mongodb-mongodb-replica1_2:
+    extends: 
+      file: replica/docker-compose.yml
+      service: mongodb_replica_base
+    environment:
+      REPLSET: rs1
+    hostname: mongodb-replica1_2
+    container_name: mongodb-replica1_2
+    ports:
+      - "27039:27017"
+    networks:
+      - mongo-net    
+  mongodb-replica2_0:
+    extends: 
+      file: replica/docker-compose.yml
+      service: mongodb_replica_base
+    environment:
+      REPLSET: rs2
+      ROLE: PRIMARY
+      REPLICA_NODE_COUNT: 3
+      REPLICA_NODE_PREFIX: "mongodb-replica2_"
+    hostname: mongodb-replica2_0
+    ports:
+      - "27047:27017"
+    container_name: mongodb-replica2_0
+    networks:
+      - mongo-net
+
+  mongodb-replica2_1:
+    extends: 
+      file: replica/docker-compose.yml
+      service: mongodb_replica_base
+    environment:
+      REPLSET: rs2
+    hostname: mongodb-replica2_1
+    ports:
+      - "27048:27017"
+    container_name: mongodb-replica2_1
+    networks:
+      - mongo-net
+  mongodb-mongodb-replica2_2:
+    extends: 
+      file: replica/docker-compose.yml
+      service: mongodb_replica_base
+    environment:
+      REPLSET: rs2
+    hostname: mongodb-replica2_2
+    container_name: mongodb-replica2_2
+    ports:
+      - "2749:27017"
+    networks:
+      - mongo-net 
 
 networks:
   mongo-net:

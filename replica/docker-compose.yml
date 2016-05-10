@@ -1,0 +1,10 @@
+version: "2"
+
+services:
+  mongodb_replica_base:
+    build: 
+      context: ../
+      args:
+        - mongod_config=replica/mongod.conf
+        - startup_script=replica/startup.sh
+    image: mongodb_replica_base

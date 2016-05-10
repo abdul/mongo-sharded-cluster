@@ -1,0 +1,10 @@
+version: "2"
+
+services:
+  mongodb_config_base:
+    build: 
+      context: ../
+      args:
+        - mongod_config=config/mongod.conf
+        - startup_script=config/startup.sh
+    image: mongo-config-server-base
