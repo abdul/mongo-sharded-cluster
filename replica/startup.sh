@@ -30,7 +30,7 @@ if [ "$ROLE" == "PRIMARY" ]
     $MONGO --port $PORT --eval "rs.add(\"${REPLICA_NODE_PREFIX}${COUNTER}:${PORT}\")"
     let COUNTER=COUNTER+1 
   done
-  echo "Replica $(REPLSET) should be ready."
+  echo "Replica ${REPLSET} should be ready."
   echo "Please check Replica status with rs.status() by connecting to ${REPLICA_NODE_PREFIX}_0"
 fi
 tail -f /dev/null
